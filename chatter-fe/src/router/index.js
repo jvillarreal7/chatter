@@ -22,9 +22,9 @@ const router = new Router({
 // Redirect to login page if there's no token in session.
 router.beforeEach((to, from, next) => {
   if (sessionStorage.getItem('authToken') !== null || to.path === '/auth') {
-    next();
+    next()
   } else {
-    next('/auth');
+    next('/auth')
   }
 });
 

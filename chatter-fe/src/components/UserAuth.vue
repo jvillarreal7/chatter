@@ -70,21 +70,21 @@
     methods: {
       signUp() {
         $.post('http://localhost:8000/auth/users/', this.$data, (data) => {
-          alert("Your account has been created. You'll be signed in automatically.");
-          this.signIn();
+          alert("Your account has been created. You'll be signed in automatically.")
+          this.signIn()
         })
         .fail((response) => {
-          alert(response.responseText);
+          alert(response.responseText)
         });
       },
 
       signIn() {
         const credentials = {username: this.username, password: this.password}
 
-        $.post('http://localhost:8000/auth/token/login/', credentials, (data) => {
-          sessionStorage.setItem('authToken', data.auth_token);
-          sessionStorage.setItem('username', this.username);
-          this.$router.push('/chats');
+        $.post('http://localhost:8000/auth/jwt/create/', credentials, (data) => {
+          sessionStorage.setItem('authToken', data.token)
+          sessionStorage.setItem('username', this.username)
+          this.$router.push('/chats')
         })
         .fail((response) => {
           alert(response.responseText)

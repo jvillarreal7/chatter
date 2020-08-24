@@ -9,6 +9,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions
 
+from notifications.signals import notify
+
 
 class ChatSessionView(APIView):
     """Manage chat sessions."""
@@ -82,11 +84,28 @@ class ChatSessionMessageView(APIView):
         user = request.user
         chat_session = ChatSession.objects.get(uri=uri)
 
-        ChatSessionMessage.objects.create(
+        chat_session_message = ChatSessionMessage.objects.create(
             user=user, chat_session=chat_session, message=message
+        )
+
+        notif_args = {
+            'source': user,
+            'source_display_name': user.get_full_name(),
+            'category': 'chat', 'action': 'Sent',
+            'obj': chat_session_message.id,
+            'short_description': 'You have a new message!', 'silent': True,
+            'extra_data': {'uri': chat_session.uri, 'message': chat_session_message.to_json()}
+        }
+        notify.send(
+            sender=self.__class__, **notif_args, channels=['websocket']
         )
 
         return Response({
             'status': 'SUCCESS', 'uri': chat_session.uri, 'message': message,
             'user': deserialize_user(user)
         })
+
+
+def raise_404(request):
+    """Raise a 404 Error."""
+    raise Http404

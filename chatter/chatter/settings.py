@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'djoser',
     'chat',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -109,7 +110,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
 }
 
@@ -133,3 +134,11 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+CELERY_TASK_ALWAYS_EAGER = True
+
+JWT_ALLOW_REFRESH = True
+
+NOTIFICATIONS_CHANNELS = {
+    'websocket': 'chat.channels.BroadCastWebSocketChannel'
+}
